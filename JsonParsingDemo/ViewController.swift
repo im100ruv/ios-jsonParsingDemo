@@ -8,18 +8,34 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+struct Country: Decodable {
+    let name : String
+    let capital : String
+    let region : String
+}
 
+class ViewController: UIViewController {
+    
+    var countries = [Country]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        let jsonURL = "https://restcountries.eu/rest/v2/all"
+        let url = URL(string: jsonURL)
+        
+        URLSession.shared.dataTask(with: url!) { (data, response, error) in
+            do {
+                self.countries = try JSONDecoder().decode([Country].self, from: data!)
+                
+                for eachCountry in self.countries {
+                    print(eachCountry.name + " : " + eachCountry.capital + " - " + eachCountry.region)
+                }
+            } catch {
+                print(error)
+            }
+        }.resume()
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
 
 }
 
